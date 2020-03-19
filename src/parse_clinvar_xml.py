@@ -233,10 +233,17 @@ def parse_clinvar_tree(handle, dest=sys.stdout, multi=None, verbose=True, genome
 
             for sequence_location in measure[i].findall(".//SequenceLocation"):
                 if sequence_location.attrib.get('Assembly') == genome_build:
-                    if all(sequence_location.attrib.get(key) is not None for key in
-                           ('Chr', 'start', 'referenceAllele', 'alternateAllele')):
-                        genomic_location = sequence_location
-                        break
+                    if sequence_location.attrib.get('referenceAllele') is not None: 
+                        if all(sequence_location.attrib.get(key) is not None for key in
+                               ('Chr', 'start', 'referenceAllele', 'alternateAllele')):
+                            genomic_location = sequence_location
+                            break
+                    elif sequence_location.attrib.get('referenceAlleleVCF') is not None:
+                        if all(sequence_location.attrib.get(key) is not None for key in
+                               ('Chr', 'start', 'referenceAlleleVCF', 'alternateAlleleVCF')):
+                            genomic_location = sequence_location
+                            break
+ 
             # break after finding the first non-empty GRCh37 or GRCh38 location
 
             if genomic_location is None:
@@ -246,8 +253,12 @@ def parse_clinvar_tree(handle, dest=sys.stdout, multi=None, verbose=True, genome
 
             current_row['chrom'] = genomic_location.attrib['Chr']
             current_row['pos'] = genomic_location.attrib['start']
-            current_row['ref'] = genomic_location.attrib['referenceAllele']
-            current_row['alt'] = genomic_location.attrib['alternateAllele']
+            if genomic_location.get('referenceAllele') is not None:
+                current_row['ref'] = genomic_location.attrib['referenceAllele']
+                current_row['alt'] = genomic_location.attrib['alternateAllele']
+            elif genomic_location.get('referenceAlleleVCF') is not None:
+                current_row['ref'] = genomic_location.attrib['referenceAlleleVCF']
+                current_row['alt'] = genomic_location.attrib['alternateAlleleVCF']
             current_row['start'] = genomic_location.attrib['start']
             current_row['stop'] = genomic_location.attrib['stop']
             current_row['strand'] = ''
