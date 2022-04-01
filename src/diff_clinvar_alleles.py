@@ -4,7 +4,7 @@ import pandas as pd
 """
 Rudimentary differ for clinvar_alleles.tsv.gz
 
-Usage: python diff_clinvar_alleles.py \
+Usage: python2 diff_clinvar_alleles.py \
     <clinvar_alleles.A.tsv.gz> \
     <clinvar_alleles.B.tsv.gz>
 """

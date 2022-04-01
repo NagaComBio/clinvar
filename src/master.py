@@ -137,7 +137,7 @@ for genome_build in ('b37', 'b38'):
         print("Skippping steps to generate %s tables since reference genome not given." % genome_build)
         continue
 
-    job.add(("python -u IN:parse_clinvar_xml.py "
+    job.add(("python2 -u IN:parse_clinvar_xml.py "
             "-x IN:%(clinvar_xml)s "
             "-g %(genome_build_id)s "
             "-o OUT:%(tmp_dir)s/clinvar_table_raw.single.%(genome_build)s.tsv "
@@ -154,7 +154,7 @@ for genome_build in ('b37', 'b38'):
         os.system('mkdir -p ' + output_dir)
 
         # normalize variants  (use grep -v '^$' to remove empty rows)
-        job.add("python -u normalize.py -R IN:%(reference_genome)s < IN:%(tmp_dir)s/clinvar_table_raw.%(fsuffix)s.tsv | grep -v ^$ | bgzip -c > OUT:%(tmp_dir)s/clinvar_table_normalized.%(fsuffix)s.tsv.gz" % locals())
+        job.add("python2 -u normalize.py -R IN:%(reference_genome)s < IN:%(tmp_dir)s/clinvar_table_raw.%(fsuffix)s.tsv | grep -v ^$ | bgzip -c > OUT:%(tmp_dir)s/clinvar_table_normalized.%(fsuffix)s.tsv.gz" % locals())
 
         # sort
         job.add(("cat " +
@@ -171,10 +171,10 @@ for genome_build in ('b37', 'b38'):
             ])
 
         # group by allele, since clinvar_allele_trait_pairs.*.tsv will have more than 1 record for some alleles
-        job.add("python -u IN:group_by_allele.py -i IN:%(tmp_dir)s/clinvar_allele_trait_pairs.%(fsuffix)s.tsv.gz | bgzip -c > OUT:%(tmp_dir)s/clinvar_alleles_grouped.%(fsuffix)s.tsv.gz" % locals())
+        job.add("python2 -u IN:group_by_allele.py -i IN:%(tmp_dir)s/clinvar_allele_trait_pairs.%(fsuffix)s.tsv.gz | bgzip -c > OUT:%(tmp_dir)s/clinvar_alleles_grouped.%(fsuffix)s.tsv.gz" % locals())
 
         # join information from the tab-delimited summary to the normalized genomic coordinates
-        job.add("python IN:join_variant_summary_with_clinvar_alleles.py "
+        job.add("python2 IN:join_variant_summary_with_clinvar_alleles.py "
                 "IN:%(variant_summary_table)s "
                 "IN:%(tmp_dir)s/clinvar_alleles_grouped.%(fsuffix)s.tsv.gz "
                 "OUT:%(tmp_dir)s/clinvar_alleles_combined.%(fsuffix)s.tsv.gz "
@@ -196,7 +196,7 @@ for genome_build in ('b37', 'b38'):
                 ])
 
         # create vcf
-        job.add(("python -u IN:clinvar_table_to_vcf.py IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.tsv.gz IN:%(reference_genome)s | bgzip -c > OUT:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.vcf.gz") % locals())  # create compressed version
+        job.add(("python2 -u IN:clinvar_table_to_vcf.py IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.tsv.gz IN:%(reference_genome)s | bgzip -c > OUT:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.vcf.gz") % locals())  # create compressed version
         job.add("tabix IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.vcf.gz" % locals(), output_filenames=["%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.vcf.gz.tbi" % locals()])
         job.add("cp IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.vcf.gz IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.vcf.gz.tbi %(output_dir)s/" % locals(), output_filenames=[
             "%(output_dir)s/clinvar_alleles.%(fsuffix)s.vcf.gz" % locals(),
@@ -218,7 +218,7 @@ for genome_build in ('b37', 'b38'):
                          "vt normalize -r IN:%(reference_genome)s - | "
                          "bgzip -c > OUT:%(tmp_dir)s/%(normalized_vcf)s") % locals())
                 job.add("tabix IN:%(tmp_dir)s/%(normalized_vcf)s" % locals(), output_filenames=["%(tmp_dir)s/%(normalized_vcf)s.tbi" % locals()])
-                job.add(("python -u IN:%(script_name)s -i IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.tsv.gz %(vcf_arg)s IN:%(tmp_dir)s/%(normalized_vcf)s | "
+                job.add(("python2 -u IN:%(script_name)s -i IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.tsv.gz %(vcf_arg)s IN:%(tmp_dir)s/%(normalized_vcf)s | "
                          "bgzip -c > OUT:%(tmp_dir)s/clinvar_alleles_with_%(label)s.%(fsuffix)s.tsv.gz") % locals())
                 job.add("tabix -S 1 -s 1 -b 2 -e 2 IN:%(tmp_dir)s/clinvar_alleles_with_%(label)s.%(fsuffix)s.tsv.gz" % locals(), output_filenames=["%(tmp_dir)s/clinvar_alleles_with_%(label)s.%(fsuffix)s.tsv.gz.tbi" % locals()])
                 job.add("cp IN:%(tmp_dir)s/clinvar_alleles_with_%(label)s.%(fsuffix)s.tsv.gz IN:%(tmp_dir)s/clinvar_alleles_with_%(label)s.%(fsuffix)s.tsv.gz.tbi %(output_dir)s/" % locals(), output_filenames=[
@@ -228,7 +228,7 @@ for genome_build in ('b37', 'b38'):
                 job.add("gunzip -c IN:%(tmp_dir)s/clinvar_alleles_with_%(label)s.%(fsuffix)s.tsv.gz | head -n 750 > OUT:%(output_dir)s/clinvar_alleles_with_%(label)s_example_750_rows.%(fsuffix)s.tsv" % locals())
 
         job.add(
-            "python clinvar_alleles_stats.py "
+            "python2 clinvar_alleles_stats.py "
             "IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.tsv.gz "
             "> OUT:%(tmp_dir)s/clinvar_alleles_stats.%(fsuffix)s.txt" %
             locals(),
@@ -239,7 +239,7 @@ for genome_build in ('b37', 'b38'):
         job.add("cp IN:%(tmp_dir)s/clinvar_alleles_stats.%(fsuffix)s.txt OUT:%(output_dir)s/clinvar_alleles_stats.%(fsuffix)s.txt" % locals())
 
         # run basic checks
-        job.add("python IN:check_allele_table.py IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.tsv.gz" % locals())
+        job.add("python2 IN:check_allele_table.py IN:%(tmp_dir)s/clinvar_alleles.%(fsuffix)s.tsv.gz" % locals())
 
 # run the above commands
 jr.run(job)

@@ -6,7 +6,7 @@ import gzip
 Helper script to grab some variations by their ID from the master XML for
 testing purposes.
 Usage:
-    python grab_interesting_variations.py \
+    python2 grab_interesting_variations.py \
         <ClinVarFullRelease.xml.gz> \
         <comma-separated list of variation IDs> \
         <out.xml.gz>

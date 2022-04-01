@@ -34,7 +34,7 @@ for i, line in enumerate(f):
         assert int(record['pos']) > 0 and int(record['pos']) < 3*10**8, 'Unexpected "pos" column value: ' + record['pos']
         assert all(b in 'ACGTN' for b in record['ref']), 'Unexpected "ref" column value: ' + record['ref']
         assert all(b in 'ACGTN' for b in record['alt']), 'Unexpected "alt" column value: ' + record['alt']  # there's one clinvar record with ALT = "NTGT". Not sure how to handle it.
-        assert record['variation_type'] in ["Variant", "Haplotype", "CompoundHeterozygote", "Phase unknown", "Distinct chromosomes", "CompoundHeterozygote;Haplotype", "Variant;gene-variant"], \
+        assert record['variation_type'] in ["Variant", "Haplotype", "CompoundHeterozygote", "Phase unknown", "Distinct chromosomes", "CompoundHeterozygote;Haplotype", "Variant;gene-variant", "Haplotype;Phase unknown", "Haplotype;Variant", "Haplotype, single variant"], \
             'Unexpected "variation_type" column value: ' + record['variation_type']  # there's one clinvar record with ALT = "NTGT". Not sure how to handle it.
 
         assert len(map(int, record['variation_id'].split(';'))) > 0, 'Unexpected "variation_id" column value: ' + record['variation_id']

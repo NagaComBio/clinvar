@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import sys
 import pandas as pd
 
@@ -85,7 +85,7 @@ def join_variant_summary_with_clinvar_alleles(
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("Usage: python join_variant_summary_with_clinvar_alleles.py "
+        print("Usage: python2 join_variant_summary_with_clinvar_alleles.py "
               "<variant_summary.txt.gz> "
               "<clinvar_alleles_grouped.tsv.gz> "
               "<out_name: clinvar_alleles_combined.tsv.gz> "

@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import pandas as pd
 import sys
 
 """
 Summarizes some of the columns of clinvar_alleles.tsv.gz file
-Usage: python clinvar_alleles_stats.py <clinvar_alleles.tsv.gz>
+Usage: python2 clinvar_alleles_stats.py <clinvar_alleles.tsv.gz>
 """
 
 alleles_name = sys.argv[1]
