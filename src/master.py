@@ -123,7 +123,7 @@ else:
 
 jr.run()
 
-job = pypez.Job()
+job = pypez.Job(log_directory=args.output_prefix + "/clinvar_logs")
 
 # normalize (convert to minimal representation and left-align)
 # the normalization code is in a different repo (useful for more than just clinvar) so here I just wget it:
