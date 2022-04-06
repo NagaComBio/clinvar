@@ -235,12 +235,12 @@ def parse_clinvar_tree(handle, dest=sys.stdout, multi=None, verbose=True, genome
                 if sequence_location.attrib.get('Assembly') == genome_build:
                     if sequence_location.attrib.get('referenceAllele') is not None: 
                         if all(sequence_location.attrib.get(key) is not None for key in
-                               ('Chr', 'start', 'referenceAllele', 'alternateAllele')):
+                               ('Chr', 'positionVCF', 'referenceAllele', 'alternateAllele')):
                             genomic_location = sequence_location
                             break
                     elif sequence_location.attrib.get('referenceAlleleVCF') is not None:
                         if all(sequence_location.attrib.get(key) is not None for key in
-                               ('Chr', 'start', 'referenceAlleleVCF', 'alternateAlleleVCF')):
+                               ('Chr', 'positionVCF', 'referenceAlleleVCF', 'alternateAlleleVCF')):
                             genomic_location = sequence_location
                             break
  
@@ -252,7 +252,7 @@ def parse_clinvar_tree(handle, dest=sys.stdout, multi=None, verbose=True, genome
                 continue  # don't bother with variants that don't have a VCF location
 
             current_row['chrom'] = genomic_location.attrib['Chr']
-            current_row['pos'] = genomic_location.attrib['start']
+            current_row['pos'] = genomic_location.attrib['positionVCF']
             if genomic_location.get('referenceAllele') is not None:
                 current_row['ref'] = genomic_location.attrib['referenceAllele']
                 current_row['alt'] = genomic_location.attrib['alternateAllele']
