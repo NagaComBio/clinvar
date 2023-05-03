@@ -24,6 +24,7 @@ HEADER = ['chrom', 'pos', 'ref', 'alt', 'start', 'stop', 'strand', 'variation_ty
           'all_pmids', 'inheritance_modes', 'age_of_onset', 'prevalence',
           'disease_mechanism', 'origin', 'xrefs', 'dates_ordered']
 
+CHROMS = list(map(str, range(1, 23))) + ['X', 'Y', 'MT']
 
 def replace_semicolons(s, replace_with=":"):
     return s.replace(";", replace_with)
@@ -299,12 +300,14 @@ def parse_clinvar_tree(handle, dest=sys.stdout, multi=None, verbose=True, genome
             current_row[column_name] = remove_newlines_and_tabs(';'.join(map(replace_semicolons, column_value)))
 
             if len(measure) == 1:
-                dest.write(('\t'.join([current_row[column] for column in HEADER]) + '\n').encode('utf-8'))
-                scounter += 1
+                if current_row['chrom'] in CHROMS:
+                    dest.write(('\t'.join([current_row[column] for column in HEADER]) + '\n').encode('utf-8'))
+                    scounter += 1
             else:
-                if multi is not None:
-                    multi.write(('\t'.join([current_row[column] for column in HEADER]) + '\n').encode('utf-8'))
-                    mcounter += 1
+                if current_row['chrom'] in CHROMS:
+                    if multi is not None:
+                        multi.write(('\t'.join([current_row[column] for column in HEADER]) + '\n').encode('utf-8'))
+                        mcounter += 1
 
             if scounter % 100 == 0:
                 dest.flush()
